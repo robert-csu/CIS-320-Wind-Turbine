@@ -10,7 +10,6 @@
 #define LEFT 0xBB44FF00
 #define RIGHT 0xBC43FF00
 
-
 void whatButtonCheck(unsigned long code){
 
   switch (code) {
