@@ -1,7 +1,10 @@
 #include <AccelStepper.h>
 #include <IRremote.hpp>
 
-#define IR_RECEIVE_PIN 3
+
+//#include "Turbine.h"
+//#include "IR_Reader.h"
+
 
 #define OK 0xBF40FF00
 #define UP 0xB946FF00
