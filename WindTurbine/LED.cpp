@@ -4,9 +4,6 @@
 
 bool blinkingFlag = false;
 
-void initiateLED(){
-  pinMode(LED_PIN, OUTPUT);
-}
 void setBlinking(){
   while(blinkingFlag){
     digitalWrite(LED_BUILTIN, HIGH);
@@ -22,4 +19,9 @@ void setSolid(){
 
 void setOff(){
   digitalWrite(LED_BUILTIN, LOW);
+}
+
+void initiateLED(){
+  pinMode(LED_PIN, OUTPUT);
+  setOff();
 }

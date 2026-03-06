@@ -6,6 +6,7 @@
 #include "LightSensor.h"
 #include "WindTurbine.h"
 #include "LED.h"
+#include "RelayController.h"
 
 
 bool step_flag = false;
@@ -28,9 +29,11 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  if(error){
+    return;
+  }
 
   IRwait();
-  updateServo();
 
   if(step_flag){
     turbineArms.setSpeed(ifNight());
@@ -41,6 +44,8 @@ void loop() {
     turbineArms.stop(); 
     turbineArms.disableOutputs();
   }
+
+  updateServo();
   
 }
 
