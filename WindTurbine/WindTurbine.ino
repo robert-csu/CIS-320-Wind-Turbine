@@ -1,11 +1,19 @@
 
-
+#include <IRremote.hpp>
 #include "Turbine.h"
 #include "ServoMotor.h"
-//#include "IR_Reader.h"
+#include "IRReader.h"
 
 
 bool step_flag = false;
+
+
+void IRwait(){
+  if (IrReceiver.decode()) {
+    whatButtonCheck(IrReceiver.decodedIRData.decodedRawData);
+    IrReceiver.resume(); 
+  }
+}
 
 void setup() {
   Serial.begin(9600);
@@ -15,7 +23,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
 
-  //IRwait();
+  IRwait();
 
   if(step_flag){
     turbineArms.setSpeed(ifNight());
