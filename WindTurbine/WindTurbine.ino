@@ -5,6 +5,7 @@
 #include "IRReader.h"
 #include "LightSensor.h"
 #include "WindTurbine.h"
+#include "LED.h"
 
 
 bool step_flag = false;
