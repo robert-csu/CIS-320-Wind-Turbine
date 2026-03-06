@@ -18,16 +18,18 @@ jobs:
           curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
           echo "$HOME/bin" >> $GITHUB_PATH
 
-      - name: Install Arduino AVR core (for Uno/Nano/Mega)
+      - name: Install Arduino AVR core
         run: |
           arduino-cli core update-index
           arduino-cli core install arduino:avr
 
-      - name: Install libraries
+      - name: Install all required libraries
         run: |
-          arduino-cli lib install "AccelStepper"
-          arduino-cli lib install "IRremote"
+          arduino-cli lib install "AccelStepper"   # Turbine (stepper motor)
+          arduino-cli lib install "IRremote"        # IRReader
+          arduino-cli lib install "Servo"           # ServoController
+          arduino-cli lib install "NewPing"         # UltraSonicSensor
 
       - name: Compile sketch
         run: |
-          arduino-cli compile --fqbn arduino:avr:uno ./path/to/your/sketch
+          arduino-cli compile --fqbn arduino:avr:uno ./WindTurbine
