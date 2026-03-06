@@ -10,5 +10,6 @@ void initiateServo();
 void updateServo();
 void turnLeft();
 void turnRight();
+void stopServo();
 
 #endif

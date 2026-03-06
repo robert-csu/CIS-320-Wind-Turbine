@@ -61,3 +61,7 @@ void turnRight(){
   servoStartTime = millis();
   servo.write(STOP_SPEED);
 }
+
+void stopServo() {
+  servo.write(STOP_SPEED);
+}
