@@ -7,6 +7,7 @@
 extern Servo servo;
 
 void initiateServo();
+void updateServo();
 void turnLeft();
 void turnRight();
 
