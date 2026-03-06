@@ -3,7 +3,6 @@
 #define ldrPin A0
 
 float currentSpeed = 853;
-int threshold = 300;
 
 AccelStepper turbineArms(AccelStepper::HALF4WIRE, 8, 10, 9, 11);
 
