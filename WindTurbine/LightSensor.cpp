@@ -2,6 +2,7 @@
 #include "WindTurbine.h"
 #include "Turbine.h"
 #include "LightSensor.h"
+#include "LED.h"
 
 float tolerance = 300;
 
@@ -10,8 +11,10 @@ float ifNight(){
 
   if(ldrValue <= tolerance){
     return 512;
+    setBlinking();
   }
   else{
+    setOff();
     return currentSpeed;
   }
 }
