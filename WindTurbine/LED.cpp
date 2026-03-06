@@ -22,6 +22,6 @@ void setOff(){
 }
 
 void initiateLED(){
-  pinMode(LED_BUILTIN, LED_PIN);
+  pinMode(LED_PIN, OUTPUT);
   setOff();
 }
