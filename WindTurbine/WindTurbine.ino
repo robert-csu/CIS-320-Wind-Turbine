@@ -24,6 +24,7 @@ void loop() {
   // put your main code here, to run repeatedly:
 
   IRwait();
+  updateServo();
 
   if(step_flag){
     turbineArms.setSpeed(ifNight());

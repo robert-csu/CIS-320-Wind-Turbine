@@ -24,34 +24,40 @@ Servo servo;
 
 double rotation = 0.0;
 
+unsigned long servoStartTime = 0;
+bool isServoMoving = false;
+
 void initiateServo(){
   servo.attach(SERVO_PIN);
   servo.write(STOP_SPEED);
 }
 
+void updateServo(){
+  if (isServoMoving && (millis() - servoStartTime >= (unsigned long)(CIRCLE_SPEED_MS * TURN_AMOUNT))) {
+    servo.write(STOP_SPEED);
+    isServoMoving = false;
+  }
+}
+
 void turnLeft(){
-  if (rotation >= MAX_LEFT_ROTATION){
+  if (rotation >= MAX_LEFT_ROTATION || isServoMoving){
     return;
   }
 
   rotation += TURN_AMOUNT;
-  
-  double time_delay = CIRCLE_SPEED_MS * TURN_AMOUNT;
 
   servo.write(LEFT_TURN_SPEED);
-  delay((unsigned long)time_delay);
+  servoStartTime = millis();
   servo.write(STOP_SPEED);
 }
 
 void turnRight(){
-  if (rotation <= MAX_RIGHT_ROTATION){
+  if (rotation <= MAX_RIGHT_ROTATION || isServoMoving){
     return;
   }
   rotation -= TURN_AMOUNT;
-  
-  double time_delay = CIRCLE_SPEED_MS * TURN_AMOUNT;
 
   servo.write(RIGHT_TURN_SPEED);
-  delay((unsigned long)time_delay);
+  servoStartTime = millis();
   servo.write(STOP_SPEED);
 }
