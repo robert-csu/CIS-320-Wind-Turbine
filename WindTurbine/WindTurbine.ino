@@ -3,6 +3,7 @@
 #include "Turbine.h"
 #include "ServoMotor.h"
 #include "IRReader.h"
+#include "LightSensor.h"
 
 
 bool step_flag = false;

@@ -5,10 +5,11 @@
 
 extern AccelStepper turbineArms;
 
+extern float currentSpeed;
+
 void initiateTurbine();
 
 void increaseSpeed();
 void decreaseSpeed();
-int ifNight();
 
 #endif
