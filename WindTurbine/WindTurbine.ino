@@ -21,6 +21,7 @@ void setup() {
   Serial.begin(9600);
   initiateTurbine();
   IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
+  initiateServo();
 }
 
 void loop() {
