@@ -24,14 +24,3 @@ void decreaseSpeed(){
   Serial.print("Speed down: "); Serial.println(currentSpeed);
 }
 
-
-int ifNight(){
-  //int lightLevel = analogRead(ldrPin); 
-  bool dayTime = true;
-  if (dayTime) {
-    currentSpeed = 512;
-    return currentSpeed;
-  } else {
-    return currentSpeed;
-  }
-}
