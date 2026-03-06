@@ -1,7 +1,7 @@
 
-#include <IRremote.hpp>
 
 #include "Turbine.h"
+#include "ServoMotor.h"
 //#include "IR_Reader.h"
 
 
