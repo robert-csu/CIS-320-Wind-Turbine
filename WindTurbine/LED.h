@@ -9,5 +9,6 @@ void initiateLED();
 void setBlinking();
 void setSolid();
 void setOff();
+void updateLED();
 
 #endif

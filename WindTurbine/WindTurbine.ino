@@ -47,7 +47,7 @@ void loop() {
     turbineArms.disableOutputs();
   }
 
-  //updateServo();
+  updateLED();
   
 }
 
