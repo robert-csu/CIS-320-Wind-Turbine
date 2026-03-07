@@ -1,4 +1,6 @@
+
 #include <Arduino.h>
+#include "IRReader.h"
 #include "Turbine.h"
 #include "ServoMotor.h"
 #include "WindTurbine.h"
@@ -9,8 +11,16 @@
 #define DOWN 0xEA15FF00
 #define LEFT 0xBB44FF00
 #define RIGHT 0xBC43FF00
+#define STAR 0xBD42FF00
+
+bool isValidCode(unsigned long code){
+  return (code == OK || code == UP || code == DOWN || 
+          code == LEFT || code == RIGHT || code == STAR);
+}
 
 void whatButtonCheck(unsigned long code){
+  if (code == 0 || code == 0xFFFFFFFF) return;
+  if (!isValidCode(code)) return;
 
   switch (code) {
     case OK:
@@ -23,11 +33,17 @@ void whatButtonCheck(unsigned long code){
       decreaseSpeed();
       break;
     case LEFT:
+      Serial.println("LEFT BUTTON");
       turnLeft();
       break;
     case RIGHT:
+      Serial.println("Right BUTTON");
      turnRight();
      break;
+    case STAR:
+      Serial.println("Stop BUTTON");
+      stopServo();
+      break;
     default:
       break;
   }
