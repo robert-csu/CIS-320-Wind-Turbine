@@ -14,6 +14,7 @@ bool step_flag = false;
 
 void IRwait(){
   if (IrReceiver.decode()) {
+    Serial.println(IrReceiver.decodedIRData.decodedRawData, HEX);
     whatButtonCheck(IrReceiver.decodedIRData.decodedRawData);
     IrReceiver.resume(); 
   }
@@ -35,6 +36,7 @@ void loop() {
   }
 
   IRwait();
+  updateLED();
 
   if(step_flag){
     turbineArms.setSpeed(ifNight());
@@ -44,9 +46,10 @@ void loop() {
     turbineArms.setSpeed(0);
     turbineArms.stop(); 
     turbineArms.disableOutputs();
+    setOff();
   }
 
-  updateServo();
+
   
 }
 

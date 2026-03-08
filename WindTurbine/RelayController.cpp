@@ -6,7 +6,7 @@
 #define RELAY_ON LOW
 #define RELAY_OFF HIGH
 
-#define RELAY_PIN 7
+#define RELAY_PIN 6
 
 bool error = false;
 

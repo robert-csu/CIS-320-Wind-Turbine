@@ -1,67 +1,45 @@
-/*
-Going to need to time the servo motor or the specific rpm so I can time the rotations.
- - Going a full rotation to the left will be +1
- - Going a full rotation to the right will be -1
- - when turnLeft() is it add to the rotational variable
- - when turnRight() is it subtract from the rotational variable
-*/
-
 #include <Arduino.h>
 #include <Servo.h>
 
 #define SERVO_PIN 12
 
-#define MAX_LEFT_ROTATION 1.00
-#define MAX_RIGHT_ROTATION -1.00
-
-#define CIRCLE_SPEED_MS 2000 // DEFAULT CIRCLE NEED TO CHANGE
-#define STOP_SPEED 90
-#define LEFT_TURN_SPEED 100
-#define RIGHT_TURN_SPEED 80
-#define TURN_AMOUNT 0.02
+#define MAX_LEFT_POS  180
+#define MAX_RIGHT_POS -10
+#define CENTER_POS    90
+#define STEP_SIZE     10
 
 Servo servo;
-
-double rotation = 0.0;
-
-unsigned long servoStartTime = 0;
-bool isServoMoving = false;
+int servoPos = CENTER_POS;
 
 void initiateServo(){
   servo.attach(SERVO_PIN);
-  servo.write(STOP_SPEED);
-}
-
-void updateServo(){
-  if (isServoMoving && (millis() - servoStartTime >= (unsigned long)(CIRCLE_SPEED_MS * TURN_AMOUNT))) {
-    servo.write(STOP_SPEED);
-    isServoMoving = false;
-  }
+  servoPos = CENTER_POS;
+  servo.write(servoPos);
 }
 
 void turnLeft(){
-  if (rotation >= MAX_LEFT_ROTATION || isServoMoving){
+  if (servoPos >= MAX_LEFT_POS){
+    Serial.println("At max left");
     return;
   }
-
-  rotation += TURN_AMOUNT;
-
-  servo.write(LEFT_TURN_SPEED);
-  servoStartTime = millis();
-  servo.write(STOP_SPEED);
+  servoPos += STEP_SIZE;
+  servoPos = min(servoPos, MAX_LEFT_POS);
+  servo.write(servoPos);
+  Serial.print("Turning Left | Position: "); Serial.println(servoPos);
 }
 
 void turnRight(){
-  if (rotation <= MAX_RIGHT_ROTATION || isServoMoving){
+  if (servoPos <= MAX_RIGHT_POS){
+    Serial.println("At max right");
     return;
   }
-  rotation -= TURN_AMOUNT;
-
-  servo.write(RIGHT_TURN_SPEED);
-  servoStartTime = millis();
-  servo.write(STOP_SPEED);
+  servoPos -= STEP_SIZE;
+  servoPos = max(servoPos, MAX_RIGHT_POS); 
+  servo.write(servoPos);
+  Serial.print("Turning Right | Position: "); Serial.println(servoPos);
 }
 
-void stopServo() {
-  servo.write(STOP_SPEED);
+void stopServo(){
+  servo.write(servoPos);  
+  Serial.print("Servo stopped at: "); Serial.println(servoPos);
 }
