@@ -36,6 +36,7 @@ void loop() {
   }
 
   IRwait();
+  updateLED();
 
   if(step_flag){
     turbineArms.setSpeed(ifNight());
@@ -45,9 +46,10 @@ void loop() {
     turbineArms.setSpeed(0);
     turbineArms.stop(); 
     turbineArms.disableOutputs();
+    setOff();
   }
 
-  updateLED();
+
   
 }
 

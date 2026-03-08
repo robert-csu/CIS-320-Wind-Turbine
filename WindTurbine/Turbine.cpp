@@ -1,14 +1,15 @@
 #include <AccelStepper.h>
 
 #define ldrPin A0
-#define MAX_SPEED 950
+#define MAX_SPEED 800
 #define MIN_SPEED 50
-float currentSpeed = 853;
 
-AccelStepper turbineArms(AccelStepper::HALF4WIRE, 8, 10, 9, 11);
+AccelStepper turbineArms(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
+
+float currentSpeed = 600;
 
 void initiateTurbine(){
-  turbineArms.setMaxSpeed(1000);
+  turbineArms.setMaxSpeed(800);
 }
 
 void increaseSpeed(){
