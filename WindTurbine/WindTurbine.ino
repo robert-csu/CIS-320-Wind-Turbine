@@ -7,11 +7,9 @@
 #include "WindTurbine.h"
 #include "LED.h"
 #include "RelayController.h"
-<<<<<<< Updated upstream
-=======
 #include "UltraSonicSensor.h"
 #include "Display.h"
->>>>>>> Stashed changes
+
 
 
 bool step_flag = false;
