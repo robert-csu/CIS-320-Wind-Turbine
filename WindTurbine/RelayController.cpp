@@ -28,8 +28,6 @@ void errorStop(){
 
 void clearedError(){
   digitalWrite(RELAY_PIN, RELAY_OFF);
-
-  step_flag = true;
   initiateLED();
 }
 
