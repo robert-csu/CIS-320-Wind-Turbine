@@ -7,6 +7,9 @@
 #include "WindTurbine.h"
 #include "LED.h"
 #include "RelayController.h"
+#include "UltraSonicSensor.h"
+#include "Display.h"
+
 
 
 bool step_flag = false;
@@ -25,6 +28,7 @@ void setup() {
   initiateTurbine();
   initiateServo();
   initiateLED();
+  initiateDisplay();
 
   IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
 }
@@ -38,15 +42,30 @@ void loop() {
   IRwait();
   updateLED();
 
+<<<<<<< Updated upstream
+=======
+  if(millis() - lastDistCheck >= 200){
+    lastDistCheck = millis();
+    constantDistCheck();
+  }
+
+  if(error){
+    errorStop();
+    errorDisplay();
+  }
+
+>>>>>>> Stashed changes
   if(step_flag){
     turbineArms.setSpeed(ifNight());
     turbineArms.runSpeed();
+    updateDisplay(nightMode);
   }
   else{
     turbineArms.setSpeed(0);
     turbineArms.stop(); 
     turbineArms.disableOutputs();
     setOff();
+    clearDisplay();
   }
 
 
