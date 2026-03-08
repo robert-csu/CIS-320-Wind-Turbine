@@ -4,6 +4,7 @@
 #include "Turbine.h"
 #include "ServoMotor.h"
 #include "WindTurbine.h"
+#include "UltraSonicSensor.h"
 
 
 #define OK 0xBF40FF00
@@ -35,10 +36,12 @@ void whatButtonCheck(unsigned long code){
     case LEFT:
       Serial.println("LEFT BUTTON");
       turnLeft();
+      constantDistCheck();
       break;
     case RIGHT:
       Serial.println("Right BUTTON");
      turnRight();
+     constantDistCheck();
      break;
     case STAR:
       Serial.println("Stop BUTTON");

@@ -7,9 +7,11 @@
 #include "WindTurbine.h"
 #include "LED.h"
 #include "RelayController.h"
+#include "UltraSonicSensor.h"
 
 
 bool step_flag = false;
+unsigned int lastDistCheck = 0;
 
 
 void IRwait(){
@@ -22,6 +24,7 @@ void IRwait(){
 
 void setup() {
   Serial.begin(9600);
+  initiateUltraSonicSensor();
   initiateTurbine();
   initiateServo();
   initiateLED();
@@ -31,12 +34,18 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  if(error){
-    return;
-  }
 
   IRwait();
   updateLED();
+
+  if(millis() - lastDistCheck >= 200){
+    lastDistCheck = millis();
+    constantDistCheck();
+  }
+
+  if(error){
+    errorStop();
+  }
 
   if(step_flag){
     turbineArms.setSpeed(ifNight());
