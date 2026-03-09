@@ -15,11 +15,9 @@ void initiateTurbine(){
 void increaseSpeed(){
   if(currentSpeed <= MAX_SPEED){
       currentSpeed += 50; 
-      Serial.print("Speed Increase: "); Serial.println(currentSpeed);
   }
   else{
     currentSpeed = 1000;
-    Serial.print("Speed Increase: "); Serial.println(currentSpeed);
   }
 
   turbineArms.setSpeed(currentSpeed);
@@ -29,11 +27,9 @@ void increaseSpeed(){
 void decreaseSpeed(){
    if(currentSpeed >= MIN_SPEED){
       currentSpeed -= 50; 
-      Serial.print("Speed Decrease: "); Serial.println(currentSpeed);
   }
   else{
     currentSpeed = 0;
-    Serial.print("Speed Decrease: "); Serial.println(currentSpeed);
   }
 
   turbineArms.setSpeed(currentSpeed);

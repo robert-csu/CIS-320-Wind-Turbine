@@ -11,12 +11,12 @@ float ifNight(){
 
   if(ldrValue >= tolerance){
     setBlinking();
-    Serial.print("NIGHT TIME | "); Serial.println(ldrValue);
+    Serial.println(ldrValue);
     return 512;
    
   }
   else{
-    Serial.print("DAY TIME | "); Serial.println(ldrValue);
+    Serial.println(ldrValue);
     setOff();
     return currentSpeed;
   }
