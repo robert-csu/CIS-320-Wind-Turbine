@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wind Turbine Monitor</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:#fff; color:#111; font-size:14px; }
+
+  header {
+    padding:20px 32px;
+    border-bottom:1px solid #1E4D2B;
+    display:flex; align-items:center; justify-content:space-between;
+    background:#1E4D2B;
+  }
+  header h1 { font-size:18px; font-weight:600; color:#fff; }
+
+  .status-badge {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:4px 10px; border-radius:99px;
+    font-size:12px; font-weight:500;
+    background:rgba(255,255,255,0.15); color:#fff;
+    border:1px solid rgba(255,255,255,0.3);
+  }
+  .status-badge .dot {
+    width:7px; height:7px; border-radius:50%;
+    background:#fff;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .container { max-width:960px; margin:0 auto; padding:32px; }
+
+  .view-btn {
+    padding: 6px 16px;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+    background: #fff;
+    color: #888;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .view-btn.active {
+    background: #1E4D2B;
+    color: #fff;
+    border-color: #1E4D2B;
+  }
+
+  .stats-row {
+    display:grid; grid-template-columns:repeat(4,1fr); gap:16px;
+    margin-bottom:28px;
+  }
+  .stat-card { border:1px solid #e5e5e5; border-radius:8px; padding:20px; }
+  .stat-card .label { font-size:11px; color:#888; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.06em; }
+  .stat-card .value { font-size:30px; font-weight:600; color:#111; line-height:1; }
+  .stat-card .sub { font-size:12px; color:#aaa; margin-top:6px; }
+  .stat-card.primary { border-color:#1E4D2B; }
+  .stat-card.primary .value { color:#1E4D2B; }
+
+  .chart-card { border:1px solid #e5e5e5; border-radius:8px; padding:24px; margin-bottom:20px; }
+  .chart-card h2 { font-size:14px; font-weight:600; margin-bottom:20px; }
+
+  .bottom-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+
+  table { width:100%; border-collapse:collapse; }
+  th { font-size:11px; text-align:left; padding:0 0 10px; color:#888; font-weight:500; text-transform:uppercase; letter-spacing:0.05em; border-bottom:1px solid #e5e5e5; }
+  td { padding:9px 0; font-size:13px; border-bottom:1px solid #f5f5f5; color:#333; }
+  td:last-child { text-align:right; font-weight:500; color:#1E4D2B; }
+
+  .log-list { list-style:none; max-height:220px; overflow-y:auto; }
+  .log-list li { display:flex; gap:12px; padding:7px 0; border-bottom:1px solid #f5f5f5; font-size:12px; }
+  .log-list li .ts { color:#ccc; flex-shrink:0; width:58px; }
+  .log-list li .msg { color:#555; }
+  .log-list li.good .msg { color:#1E4D2B; }
+  .log-list li.warn .msg { color:#b45309; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Wind Turbine Monitor — Fort Collins, CO</h1>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <span style="font-size:13px;color:#fff" id="clock">--:--:--</span>
+    <div class="status-badge"><div class="dot"></div><span id="status-text">Connecting...</span></div>
+  </div>
+</header>
+
+<div class="container">
+
+  <div style="display:flex;gap:8px;margin-bottom:24px;">
+    <button class="view-btn active" data-view="auto">Auto</button>
+    <button class="view-btn" data-view="hour">Hour</button>
+    <button class="view-btn" data-view="day">Day</button>
+    <button class="view-btn" data-view="week">Week</button>
+    <button class="view-btn" data-view="month">Month</button>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card primary">
+      <div class="label">Rotor Speed</div>
+      <div class="value" id="rpm">--</div>
+      <div class="sub">RPM</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Live Output</div>
+      <div class="value" id="actual-power">--</div>
+      <div class="sub">Watts</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">LDR Reading</div>
+      <div class="value" id="ldr">--</div>
+      <div class="sub">/ 1023</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Forecast Power</div>
+      <div class="value" id="predicted-power">--</div>
+      <div class="sub" id="pred-sub">Fetching...</div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <h2>Predicted vs Actual Power Output (W)</h2>
+    <canvas id="power-chart" height="80"></canvas>
+  </div>
+
+  <div class="bottom-row">
+    <div class="chart-card" style="margin-bottom:0">
+      <h2>8-Hour Wind Forecast</h2>
+      <table>
+        <thead><tr><th>Time</th><th>Wind Speed</th><th>Expected (W)</th></tr></thead>
+        <tbody id="forecast-body"><tr><td colspan="3" style="color:#ccc">Loading...</td></tr></tbody>
+      </table>
+    </div>
+    <div class="chart-card" style="margin-bottom:0">
+      <h2>Event Log</h2>
+      <ul class="log-list" id="log-list"></ul>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+  import { getDatabase, ref, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
+
+  const METEO_URL = "https://api.open-meteo.com/v1/forecast?latitude=40.57778809380395&longitude=-105.08476475636544&minutely_15=wind_speed_80m&timezone=America%2FDenver&forecast_days=1&wind_speed_unit=ms";
+
+  const WIND_TO_W = v => Math.max(0, 0.09 * v ** 3);
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBv0UHSgqN9yHDsz-qb7jwALxQ10pzK6xw",
+    authDomain: "windturbine-111c8.firebaseapp.com",
+    databaseURL: "https://windturbine-111c8-default-rtdb.firebaseio.com",
+    projectId: "windturbine-111c8",
+    storageBucket: "windturbine-111c8.firebasestorage.app",
+    messagingSenderId: "430428463864",
+    appId: "1:430428463864:web:c552889dfb73d4af89d10d"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  setInterval(() => {
+    const n = new Date();
+    document.getElementById('clock').textContent =
+      [n.getHours(),n.getMinutes(),n.getSeconds()].map(x=>String(x).padStart(2,'0')).join(':');
+  }, 1000);
+
+  let logs = [];
+  function addLog(msg, type='') {
+    const n = new Date();
+    const ts = [n.getHours(),n.getMinutes(),n.getSeconds()].map(x=>String(x).padStart(2,'0')).join(':');
+    logs.unshift({ts, msg, type});
+    if(logs.length > 50) logs.pop();
+    document.getElementById('log-list').innerHTML = logs.map(l =>
+      `<li class="${l.type}"><span class="ts">${l.ts}</span><span class="msg">${l.msg}</span></li>`
+    ).join('');
+  }
+
+  const ctx = document.getElementById('power-chart').getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [
+        { label:'Actual (W)', data:[], borderColor:'#1E4D2B', backgroundColor:'rgba(30,77,43,0.07)', borderWidth:2, pointRadius:0, tension:0.4, fill:true },
+        { label:'Predicted (W)', data:[], borderColor:'#D9782D', backgroundColor:'transparent', borderWidth:1.5, borderDash:[5,4], pointRadius:0, tension:0.4 }
+      ]
+    },
+    options: {
+      animation:{duration:0},
+      responsive:true, maintainAspectRatio:true,
+      interaction:{mode:'index', intersect:false},
+      plugins:{
+        legend:{ labels:{ font:{family:'Inter',size:12}, color:'#555', boxWidth:24, padding:20 }},
+        tooltip:{ backgroundColor:'#fff', borderColor:'#e5e5e5', borderWidth:1, titleColor:'#111', bodyColor:'#555', titleFont:{family:'Inter'}, bodyFont:{family:'Inter'} }
+      },
+      scales:{
+        x:{ ticks:{color:'#bbb', font:{family:'Inter',size:11}, maxTicksLimit:8}, grid:{color:'#f5f5f5'} },
+        y:{ ticks:{color:'#bbb', font:{family:'Inter',size:11}}, grid:{color:'#f5f5f5'}, beginAtZero:true }
+      }
+    }
+  });
+
+
+  let windSpeed = 0;
+
+  async function fetchSpeed() {
+    try {
+      const res = await fetch(METEO_URL);
+      const data = await res.json();
+      const now = new Date();
+      const closestTime = data.minutely_15.time.findIndex(t => new Date(t) > now) - 1;
+      windSpeed = data.minutely_15.wind_speed_80m[Math.max(0, closestTime)];
+
+      document.getElementById('predicted-power').textContent = WIND_TO_W(windSpeed).toFixed(1);
+      document.getElementById('pred-sub').textContent = `@ ${windSpeed.toFixed(1)} m/s at 80m`;
+      addLog(`Wind: ${windSpeed.toFixed(1)} m/s at 80m`, 'good');
+
+      
+      const rows = [];
+      for(let i = 0; i < data.minutely_15.time.length && rows.length < 8; i++) {
+        const t = new Date(data.minutely_15.time[i]);
+        if(t > now) rows.push({
+          time: t.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+          wind: data.minutely_15.wind_speed_80m[i],
+          power: WIND_TO_W(data.minutely_15.wind_speed_80m[i])
+        });
+      }
+      document.getElementById('forecast-body').innerHTML = rows.map(r =>
+        `<tr><td>${r.time}</td><td>${r.wind.toFixed(1)} m/s</td><td>${r.power.toFixed(1)} W</td></tr>`
+      ).join('');
+
+    } catch(e) {
+      addLog('Open-Meteo error: ' + e.message, 'warn');
+    }
+  }
+
+  fetchSpeed();
+  setInterval(fetchSpeed, 900000);
+
+
+  let lastActual = null;
+  let currentView = "auto";
+  const autoInterval = setInterval(() => {
+    if(currentView != "auto"){ return;}
+    const now = new Date().toLocaleTimeString();
+    chart.data.labels.push(now);
+    chart.data.datasets[0].data.push(lastActual);
+    chart.data.datasets[1].data.push(chart.data.labels.length <= 1 ? 0 : +WIND_TO_W(windSpeed).toFixed(1));
+    if(chart.data.labels.length > 60) {
+      chart.data.labels.shift();
+      chart.data.datasets[0].data.shift();
+      chart.data.datasets[1].data.shift();
+    }
+    chart.update();
+  }, 1000);
+
+
+  onValue(ref(db, "WindTurbine/latest"), (snapshot) => {
+    const data = snapshot.val();
+    const ldr = data.ldr;
+
+    const windSim = (0.2 + 0.8 * ((1023 - ldr) / 1023)) * windSpeed;
+    const rpm = windSim * 10;
+    const actualPower = WIND_TO_W(windSim);
+
+    document.getElementById('rpm').textContent = rpm.toFixed(1);
+    document.getElementById('actual-power').textContent = actualPower.toFixed(1);
+    document.getElementById('ldr').textContent = ldr;
+    document.getElementById('status-text').textContent = rpm == 0 ? 'No Wind' : rpm < 20 ? 'Low Wind' : 'Nominal';
+
+    lastActual = +actualPower.toFixed(1);
+
+
+    const lastIdx = chart.data.datasets[0].data.length - 1;
+    if(lastIdx >= 0) {
+      chart.data.datasets[0].data[lastIdx] = lastActual;
+      chart.update();
+    }
+
+    addLog(`LDR: ${ldr}, RPM: ${rpm.toFixed(1)}, Power: ${actualPower.toFixed(1)}W`);
+  });
+
+
+  async function loadHistoricalView(currentView) {
+    const now = Date.now();
+    const ranges = {
+      hour:  { ms: 60 * 60 * 1000,       bucketMs: 60 * 1000,          label: 'minute' },
+      day:   { ms: 24 * 60 * 60 * 1000,  bucketMs: 60 * 60 * 1000,     label: 'hour'   },
+      week:  { ms: 7 * 24 * 60 * 60 * 1000, bucketMs: 24 * 60 * 60 * 1000, label: 'day' },
+      month: { ms: 30 * 24 * 60 * 60 * 1000, bucketMs: 24 * 60 * 60 * 1000, label: 'day' }
+    };
+    const { ms, bucketMs } = ranges[currentView];
+    const since = now - ms;
+
+    const histRef = query(
+      ref(db, "WindTurbine/history"),
+      orderByChild("timestamp"),
+      limitToLast(5000)
+    );
+
+  
+    onValue(histRef, (snapshot) => {
+      const raw = [];
+      snapshot.forEach(child => {
+        const d = child.val();
+        const t = new Date(d.timestamp).getTime();
+        if(t >= since) raw.push({ t, ldr: d.ldr });
+    });
+
+    const buckets = {};
+    raw.forEach(({ t, ldr }) => {
+      const bucketKey = Math.floor(t / bucketMs) * bucketMs;
+      if(!buckets[bucketKey]) buckets[bucketKey] = [];
+      const windSim = (ldr / 1023) * windSpeed;
+      buckets[bucketKey].push(WIND_TO_W(windSim));
+    });
+
+    const sortedKeys = Object.keys(buckets).sort();
+    const labels = sortedKeys.map(k => {
+      const d = new Date(parseInt(k));
+      if(currentView === 'hour') return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      if(currentView === 'day')  return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      return d.toLocaleDateString([], {month:'short', day:'numeric'});
+    });
+    const actuals = sortedKeys.map(k => {
+      const vals = buckets[k];
+      return +(vals.reduce((a,b) => a+b, 0) / vals.length).toFixed(2);
+    });
+    const predicted = sortedKeys.map(() => +WIND_TO_W(windSpeed).toFixed(2));
+
+        chart.data.labels = labels;
+    chart.data.datasets[0].data = actuals;
+    chart.data.datasets[1].data = predicted;
+    chart.update();
+    }, { onlyOnce: true });
+  }
+
+  document.querySelectorAll('.view-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentView = btn.dataset.view;
+
+    if(currentView === 'auto') {
+      // auto view resets and lets the interval take over
+      chart.data.labels = [];
+      chart.data.datasets[0].data = [];
+      chart.data.datasets[1].data = [];
+      chart.update();
+    } else {
+      loadHistoricalView(currentView);
+    }
+  });
+});
+
+  addLog('Dashboard ready', 'good');
+
+</script>
+</body>
+</html>
