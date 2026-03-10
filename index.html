@@ -6,6 +6,8 @@
 <title>Wind Turbine Monitor</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family:'Inter',sans-serif; background:#fff; color:#111; font-size:14px; }
@@ -145,9 +147,6 @@
 
 <script>
 
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-  import { getDatabase, ref, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js";
-
   const METEO_URL = "https://api.open-meteo.com/v1/forecast?latitude=40.57778809380395&longitude=-105.08476475636544&minutely_15=wind_speed_80m&timezone=America%2FDenver&forecast_days=1&wind_speed_unit=ms";
 
   const WIND_TO_W = v => Math.max(0, 0.09 * v ** 3);
@@ -162,8 +161,8 @@
     appId: "1:430428463864:web:c552889dfb73d4af89d10d"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
   setInterval(() => {
     const n = new Date();
@@ -262,7 +261,7 @@
   }, 1000);
 
 
-  onValue(ref(db, "WindTurbine/latest"), (snapshot) => {
+  db.ref("WindTurbine/latest").on("value", (snapshot) => {
     const data = snapshot.val();
     console.log("Firebase data:", JSON.stringify(data));
     if (!data || data.LDR === undefined || data.LDR === null) return;
@@ -302,14 +301,10 @@
     const { ms, bucketMs } = ranges[currentView];
     const since = now - ms;
 
-    const histRef = query(
-      ref(db, "WindTurbine/history"),
-      orderByChild("timeStamp"),
-      limitToLast(5000)
-    );
-
-  
-    onValue(histRef, (snapshot) => {
+    db.ref("WindTurbine/history")
+      .orderByChild("timeStamp")
+      .limitToLast(5000)
+      .once("value", (snapshot) => {
       const raw = [];
       snapshot.forEach(child => {
         const d = child.val();
