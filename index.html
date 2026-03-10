@@ -264,7 +264,8 @@
 
   onValue(ref(db, "WindTurbine/latest"), (snapshot) => {
     const data = snapshot.val();
-    if (!data || data.LDR === undefined || data.LDR === null) return; // ← add this guard
+    console.log("Firebase data:", JSON.stringify(data));
+    if (!data || data.LDR === undefined || data.LDR === null) return;
     const ldr = data.LDR;
 
     const windSim = windSpeed > 0 ? (0.2 + 0.8 * ((1023 - ldr) / 1023)) * windSpeed : 0;
