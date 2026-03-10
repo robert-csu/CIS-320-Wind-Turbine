@@ -303,7 +303,7 @@
 
     const histRef = query(
       ref(db, "WindTurbine/history"),
-      orderByChild("timestamp"),
+      orderByChild("timeStamp"),
       limitToLast(5000)
     );
 
