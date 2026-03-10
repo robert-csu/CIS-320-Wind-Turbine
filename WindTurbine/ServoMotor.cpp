@@ -19,27 +19,22 @@ void initiateServo(){
 
 void turnLeft(){
   if (servoPos >= MAX_LEFT_POS){
-    Serial.println("At max left");
     return;
   }
   servoPos += STEP_SIZE;
   servoPos = min(servoPos, MAX_LEFT_POS);
   servo.write(servoPos);
-  Serial.print("Turning Left | Position: "); Serial.println(servoPos);
 }
 
 void turnRight(){
   if (servoPos <= MAX_RIGHT_POS){
-    Serial.println("At max right");
     return;
   }
   servoPos -= STEP_SIZE;
   servoPos = max(servoPos, MAX_RIGHT_POS); 
   servo.write(servoPos);
-  Serial.print("Turning Right | Position: "); Serial.println(servoPos);
 }
 
 void stopServo(){
   servo.write(servoPos);  
-  Serial.print("Servo stopped at: "); Serial.println(servoPos);
 }

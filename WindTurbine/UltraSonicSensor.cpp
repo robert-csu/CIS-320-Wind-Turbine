@@ -24,7 +24,6 @@ float getDistanceInches(){
 
 bool isIn6Inches(){
   float distance = getDistanceInches();
-  Serial.println(distance);
   if(distance <= 0 || distance > 200) return false;
   return distance <= 6.0;
 }
@@ -32,7 +31,7 @@ bool isIn6Inches(){
 void constantDistCheck(){
   bool tooClose = isIn6Inches(); 
   if(tooClose){
-    Serial.println("ERROR: TO CLOSE");
+
     error = true;
   }
   else if(error){

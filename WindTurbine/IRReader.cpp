@@ -34,17 +34,14 @@ void whatButtonCheck(unsigned long code){
       decreaseSpeed();
       break;
     case LEFT:
-      Serial.println("LEFT BUTTON");
       turnLeft();
       constantDistCheck();
       break;
     case RIGHT:
-      Serial.println("Right BUTTON");
      turnRight();
      constantDistCheck();
      break;
     case STAR:
-      Serial.println("Stop BUTTON");
       stopServo();
       break;
     default:
