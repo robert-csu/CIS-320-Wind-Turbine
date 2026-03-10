@@ -264,7 +264,7 @@
 
   onValue(ref(db, "WindTurbine/latest"), (snapshot) => {
     const data = snapshot.val();
-    const ldr = data.ldr;
+    const ldr = data.LDR;
 
     const windSim = (0.2 + 0.8 * ((1023 - ldr) / 1023)) * windSpeed;
     const rpm = windSim * 10;
@@ -310,8 +310,8 @@
       const raw = [];
       snapshot.forEach(child => {
         const d = child.val();
-        const t = new Date(d.timestamp).getTime();
-        if(t >= since) raw.push({ t, ldr: d.ldr });
+        const t = new Date(d.timeStamp).getTime();
+        if(t >= since) raw.push({ t, ldr: d.LDR });
     });
 
     const buckets = {};
