@@ -267,7 +267,7 @@
     if (!data || data.LDR === undefined || data.LDR === null) return;
     const ldr = data.LDR;
 
-    const windSim = windSpeed > 0 ? (0.2 + 0.8 * ((1023 - ldr) / 1023)) * windSpeed : 0;
+    const windSim = (0.2 + 0.8 * (ldr / 1023)) * windSpeed;
 
     const rpm = windSim * 10;
     const actualPower = WIND_TO_W(windSim);
