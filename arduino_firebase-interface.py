@@ -7,7 +7,7 @@ cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred, {"databaseURL": "https://windturbine-111c8-default-rtdb.firebaseio.com/"})
 ref = db.reference("WindTurbine/latest")
 
-arduino = serial.Serial('/dev/ttyUSB0', 9600)
+arduino = serial.Serial('/dev/ttyACM0', 9600)
 
 
 while True:
