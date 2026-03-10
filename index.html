@@ -337,7 +337,7 @@
     chart.data.datasets[0].data = actuals;
     chart.data.datasets[1].data = predicted;
     chart.update();
-    }, { onlyOnce: true });
+    });
   }
 
   document.querySelectorAll('.view-btn').forEach(btn => {
