@@ -4,6 +4,7 @@
 #define ldrPin A0
 
 extern float tolerance;
+extern float ldrValue;
 
 float ifNight();
 

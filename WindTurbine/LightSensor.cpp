@@ -5,9 +5,10 @@
 #include "LED.h"
 
 float tolerance = 700;
+float ldrValue;
 
 float ifNight(){
-  float ldrValue = analogRead(ldrPin);
+  ldrValue = analogRead(ldrPin);
 
   if(ldrValue >= tolerance){
     setBlinking();

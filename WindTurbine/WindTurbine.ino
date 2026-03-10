@@ -34,6 +34,8 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  ldrValue = analogRead(ldrPin); 
+  Serial.println(ldrValue);
 
   IRwait();
   updateLED();
