@@ -14,3 +14,4 @@ while True:
     line = arduino.readline().decode().strip()
     ldr = str(line)
     ref.set({"LDR": ldr, "timeStamp": str(datetime.datetime.now())})
+    ref.push({"LDR": ldr, "timeStamp": str(datetime.datetime.now())})
