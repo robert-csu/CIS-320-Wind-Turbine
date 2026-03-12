@@ -4,7 +4,6 @@
 #include "Turbine.h"
 #include "ServoMotor.h"
 #include "WindTurbine.h"
-#include "UltraSonicSensor.h"
 
 
 #define OK 0xBF40FF00
@@ -35,11 +34,9 @@ void whatButtonCheck(unsigned long code){
       break;
     case LEFT:
       turnLeft();
-      constantDistCheck();
       break;
     case RIGHT:
      turnRight();
-     constantDistCheck();
      break;
     case STAR:
       stopServo();

@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#define LED_PIN 13
+#define LED_PIN 5
 
 bool blinkingFlag = false;
 unsigned long lastBlinkTime = 0;

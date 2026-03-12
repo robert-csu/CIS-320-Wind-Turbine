@@ -18,7 +18,7 @@ float ifNight(){
   }
   else{
     Serial.println(ldrValue);
-    setOff();
+    setBlinking();
     return currentSpeed;
   }
 }
