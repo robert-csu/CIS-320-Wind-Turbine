@@ -6,8 +6,7 @@
 #include "LightSensor.h"
 #include "WindTurbine.h"
 #include "LED.h"
-#include "RelayController.h"
-#include "UltraSonicSensor.h"
+
 
 
 bool step_flag = false;
@@ -24,7 +23,6 @@ void IRwait(){
 
 void setup() {
   Serial.begin(9600);
-  initiateUltraSonicSensor();
   initiateTurbine();
   initiateServo();
   initiateLED();
@@ -40,14 +38,6 @@ void loop() {
   IRwait();
   updateLED();
 
-  if(millis() - lastDistCheck >= 200){
-    lastDistCheck = millis();
-    constantDistCheck();
-  }
-
-  if(error){
-    errorStop();
-  }
 
   if(step_flag){
     turbineArms.setSpeed(ifNight());
