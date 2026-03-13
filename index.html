@@ -303,7 +303,7 @@
       if (!buckets.has(key)) buckets.set(key, { sum: 0, count: 0, pred: 0 });
       const b    = buckets.get(key);
       const fw   = fWindAt(t);
-      const ws   = (1 - (ldr / 1023)) * fw;
+      const ws   = (0.75 + 0.25 * (ldr / 1023)) * fw;
       const act  = WIND_TO_W(ws);
       const pred = fPowerAt(t);
       b.sum   += act;
@@ -317,7 +317,7 @@
     const d = new Date(ms);
     if (fmt === 'time')     return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     if (fmt === 'datetime') return d.toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'})
-                                 + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                                + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     return d.toLocaleDateString([], {month:'short', day:'numeric'});
   }
 
@@ -363,7 +363,7 @@
     if (!data || data.LDR == null) return;
     const ldr = data.LDR;
 
-    const ws    = (1 - (ldr / 1023)) * windSpeed;
+    const ws    = (0.75 + 0.25 * (ldr / 1023)) * windSpeed;
     const rpm   = ws * 10;
     const power = WIND_TO_W(ws);
 
